@@ -5,6 +5,7 @@ const inspirationSchema = new Schema(
     title: {
       type: String,
       required: true,
+      index: true,
     },
     description: {
       type: String,
@@ -21,12 +22,11 @@ const inspirationSchema = new Schema(
       type: String,
     },
     colorScheme: { type: [String] },
-
     fonts: { type: [String] },
     technologyStack: { type: [String] },
     categories: { type: [String] },
     niche: { type: String },
-    slug: { type: String, unique: true },
+    slug: { type: String, unique: true, index: true },
     metaTitle: { type: String },
     metaDescription: { type: String },
     pageView: { type: Number, default: 0 },
