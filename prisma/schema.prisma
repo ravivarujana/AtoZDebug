@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  username     String   @unique
+  email        String   @unique
+  password     String
+  refreshToken String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([username, email])
+}
+
+model Inspiration {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  title                String   @unique
+  description          String
+  websiteLink          String
+  desktopScreenshotUrl String?
+  mobileScreenshotUrl  String?
+  colorScheme          String[]
+  fonts                String[]
+  technologyStack      String[]
+  categories           String[]
+  niche                String?
+  slug                 String   @unique
+  metaTitle            String?
+  metaDescription      String?
+  pageView             Int?     @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([title, slug])
+}

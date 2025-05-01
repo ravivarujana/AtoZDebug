@@ -1,23 +1,33 @@
 import puppeteer from "puppeteer";
-import { uploadBufferToCloudinary } from "../config/cloudinary.js";
+import { uploadBufferToCloudinary } from "../service/cloudinary.service.js";
 import slugify from "slugify";
 import { URL } from "url";
 
-const scapeURLInformation = async (url) => {
+const scrapeAndUpload = async (url) => {
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
-  // Extract title and meta description
   const metadata = await page.evaluate(() => {
+    const getMetaData = (name, attr = "name") =>
+      document.querySelector(`meta[${attr}="${name}"]`)?.content;
+
     return {
-      title: document.title || "",
+      title: document.title,
+      description: getMetaData("description") || document.title,
+      metaTitle: getMetaData("title"),
       metaDescription:
         document.querySelector("meta[name='description']")?.content || "",
+      // fonts: window.getComputedStyle(document.querySelector("body")).fontFamily,
+      fonts: [],
+      colorScheme: [],
+      technologyStack: [],
+      categories: [],
+      niche: "",
     };
   });
 
@@ -26,20 +36,23 @@ const scapeURLInformation = async (url) => {
     strict: true,
   });
 
-  // 🖥 Desktop Screenshot
   const desktopBuffer = await page.screenshot({ fullPage: true });
-  const desktopUrl = await uploadBufferToCloudinary(desktopBuffer, `${safeSlug}-desktop`);
+  const desktopUrl = await uploadBufferToCloudinary(
+    desktopBuffer,
+    `${safeSlug}-desktop`
+  );
 
-  // 📱 Mobile Screenshot
   await page.setViewport({ width: 375, height: 812, isMobile: true });
   const mobileBuffer = await page.screenshot({ fullPage: true });
-  const mobileUrl = await uploadBufferToCloudinary(mobileBuffer, `${safeSlug}-mobile`);
+  const mobileUrl = await uploadBufferToCloudinary(
+    mobileBuffer,
+    `${safeSlug}-mobile`
+  );
 
   await browser.close();
 
   return {
-    title: metadata.title,
-    metaDescription: metadata.metaDescription,
+    ...metadata,
     websiteLink: url,
     slug: safeSlug,
     desktopScreenshotUrl: desktopUrl,
@@ -47,4 +60,4 @@ const scapeURLInformation = async (url) => {
   };
 };
 
-export default scapeURLInformation
+export default scrapeAndUpload;

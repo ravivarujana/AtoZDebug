@@ -1,19 +1,14 @@
 import dotenv from "dotenv";
 import app from "./app.js";
 import connectDB from "./db/index.js";
-import mongoose from "mongoose";
 
 dotenv.config({ path: ".env" });
 
-mongoose.connection.on("error", (error) => {
-  console.log(`Listening to the error after the initial connection ${error}`);
-});
-
 connectDB()
   .then(() => {
-    console.log("inside the success response");
+    console.log("Establishing MongoDB connection");
     app.listen(process.env.PORT || 8000, () => {
-      console.log(`Start listening to the PORT ${process.env.PORT}`);
+      console.log(`Starting Application - Listening to the PORT ${process.env.PORT}`);
     });
   })
   .catch((err) => {

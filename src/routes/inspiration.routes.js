@@ -8,6 +8,8 @@ import {
 
 const router = Router();
 
+console.log("ïnside the router")
+
 router.route("/extract-links").post(extractLinks);
 router.route("/inspirations").post(extractLinksDetailsAndSave);
 router.route("/inspirations").get(getAllInspirations);
