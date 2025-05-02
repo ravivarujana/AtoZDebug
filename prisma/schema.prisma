@@ -16,8 +16,6 @@ model User {
   refreshToken String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  @@unique([username, email])
 }
 
 model Inspiration {
@@ -39,5 +37,6 @@ model Inspiration {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  @@unique([title, slug])
+  // @@unique([title, slug])
+  @@index([title, slug])
 }
