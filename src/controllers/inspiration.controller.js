@@ -64,7 +64,27 @@ const extractLinksDetailsAndSave = asyncHandler(async (req, res) => {
   res.status(201).json({ inspirations: results });
 });
 
-const getAllInspirations = asyncHandler(async (req, res) => {});
+const getAllInspirations = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const [totalCount, inspirations] = await Promise.all([
+    prisma.inspiration.count(),
+    prisma.inspiration.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  res.status(200).json({
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / limit),
+    inspirations,
+  });
+});
 
 /**
  * Get a inspiration
