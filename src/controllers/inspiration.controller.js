@@ -100,7 +100,19 @@ const getInspiration = asyncHandler(async (req, res) => {
   if (!data) {
     throw new ApiError(404, `Inspiration not found for slug: ${slug}`);
   }
-  res.status(200).json({ data });
+
+  const updatedData = await prisma.inspiration.update({
+    where: {
+      slug: slug,
+    },
+    data: {
+      pageView: {
+        increment: 1,
+      },
+    },
+  });
+
+  res.status(200).json({ updatedData });
 });
 
 export {
